@@ -54,8 +54,6 @@ const handleTimerSubmitted = (timers, action) => {
 export const initialTimers = [createDefaultTimerConfig(0)];
 
 export default function timersReducer(timers, action) {
-  console.log(timers);
-  console.log(action);
   switch (action.type) {
     case "added":
       return handleAddedTimer(timers);

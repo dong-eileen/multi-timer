@@ -40,6 +40,7 @@ function showNotification(event, title, body) {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
+
   ipcMain.on("show-notification", showNotification);
 
   // On OS X it's common to re-create a window in the app when the

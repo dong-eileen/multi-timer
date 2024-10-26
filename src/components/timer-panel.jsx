@@ -1,6 +1,6 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TimeInput } from "@mantine/dates";
 import { ActionIcon, Fieldset, Group, TextInput } from "@mantine/core";
 import {
@@ -10,6 +10,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import buttonClasses from "../css/button.module.css";
+import alarmFile from "../audio/default-alarm.wav";
 
 TimerPanel.propTypes = {
   id: PropTypes.number,
@@ -21,6 +22,8 @@ TimerPanel.propTypes = {
 };
 
 export default function TimerPanel(props) {
+  const ALARM_SOUND = new Audio(alarmFile);
+
   const [isStarted, setIsStarted] = useState(false);
   const [time, setTime] = useState(props.submittedTime);
   const [timeError, setTimeError] = useState("");
@@ -46,7 +49,7 @@ export default function TimerPanel(props) {
     );
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     let interval;
     if (isStarted) {
       interval = setInterval(() => {
@@ -67,7 +70,7 @@ export default function TimerPanel(props) {
   }, [isStarted]);
 
   const showFinishedNotification = () => {
-    
+    ALARM_SOUND.play();
     window.electronAPI.showNotification(
       `${props.timerName} completed!`,
       `The timer ${props.timerName} has finished.`

@@ -3,53 +3,33 @@ import { useState, useReducer } from "react";
 import { Button, Grid, Space, TextInput, Fieldset } from "@mantine/core";
 import TimerPanel from "./timer-panel.jsx";
 import { IconPlus } from "@tabler/icons-react";
+import timersReducer from "../reducers/timers-reducer.js";
+import { initialTimers } from "../reducers/timers-reducer.js";
 
 // TODO: need to make new groups
 // TODO: need to find a way to save the timers
 export default function TimersGroup() {
-  const createDefaultTimerConfig = (id) => {
-    return {
-      id,
-      timerName: "Timer Name",
-      submittedTime: 0,
-    };
-  };
-
   const [groupName, setGroupName] = useState("");
-  const [timers, setTimers] = useState([createDefaultTimerConfig(0)]);
+  const [timers, dispatch] = useReducer(timersReducer, initialTimers);
 
   const handleGroupNameChange = (event) => {
     setGroupName(event.currentTarget.value);
   };
 
   const saveSubmittedTime = (changedTimerId, submittedTime) => {
-    setTimers(
-      timers.map((timer) => {
-        if (timer.id === changedTimerId) {
-          return {
-            ...timer,
-            submittedTime,
-          };
-        } else {
-          return timer;
-        }
-      })
-    );
+    dispatch({
+      type: "submitted",
+      changedTimerId,
+      submittedTime,
+    });
   };
 
   const saveTimerName = (changedTimerId, timerName) => {
-    setTimers(
-      timers.map((timer) => {
-        if (timer.id === changedTimerId) {
-          return {
-            ...timer,
-            timerName,
-          };
-        } else {
-          return timer;
-        }
-      })
-    );
+    dispatch({
+      type: "renamed",
+      changedTimerId,
+      timerName,
+    });
   };
 
   const renderTimerPanel = ({ timerName, submittedTime, id }) => {
@@ -68,20 +48,16 @@ export default function TimersGroup() {
   };
 
   const addATimer = () => {
-    const newId = makeNewId();
-    setTimers([...timers, createDefaultTimerConfig(newId)]);
-  };
-
-  const makeNewId = () => {
-    if (!timers.length) {
-      return 0;
-    }
-    const currentMax = Math.max(...timers.map(({ id }) => id));
-    return currentMax + 1;
+    dispatch({
+      type: "added",
+    });
   };
 
   const deleteATimer = (idToDelete) => {
-    setTimers(timers.filter(({ id }) => id !== idToDelete));
+    dispatch({
+      type: "deleted",
+      idToDelete,
+    });
   };
 
   return (

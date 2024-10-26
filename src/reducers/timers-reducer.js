@@ -1,14 +1,23 @@
-export default function timersReducer(timers, action) {
-  switch (action.type) {
-    case "add":
-      return handleAddTimer(timers);
-    case "submitted":
-      return handleTimerSubmitted(timers, action);
-  }
-}
+const handleTimerRenamed = (timers, action) => {
+  const { changedTimerId, timerName } = action;
+  return timers.map((timer) => {
+    if (timer.id === changedTimerId) {
+      return {
+        ...timer,
+        timerName,
+      };
+    } else {
+      return timer;
+    }
+  });
+};
 
-const handleAddTimer = (timers) => {
-  const newId = makeNewId();
+const handleTimerDeleted = (timers, action) => {
+  return timers.filter(({ id }) => id !== action.idToDelete);
+};
+
+const handleAddedTimer = (timers) => {
+  const newId = makeNewId(timers);
   return [...timers, createDefaultTimerConfig(newId)];
 };
 
@@ -41,3 +50,20 @@ const handleTimerSubmitted = (timers, action) => {
     }
   });
 };
+
+export const initialTimers = [createDefaultTimerConfig(0)];
+
+export default function timersReducer(timers, action) {
+  console.log(timers);
+  console.log(action);
+  switch (action.type) {
+    case "added":
+      return handleAddedTimer(timers);
+    case "submitted":
+      return handleTimerSubmitted(timers, action);
+    case "deleted":
+      return handleTimerDeleted(timers, action);
+    case "renamed":
+      return handleTimerRenamed(timers, action);
+  }
+}

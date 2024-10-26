@@ -26,6 +26,11 @@
  * ```
  */
 
-import './index.css';
+import "./index.css";
+import "@mantine/core/styles.css";
 
-console.log('👋 This message is being logged by "renderer.js", included via webpack');
+console.log(
+  '👋 This message is being logged by "renderer.js", included via webpack'
+);
+
+import "./app.jsx";

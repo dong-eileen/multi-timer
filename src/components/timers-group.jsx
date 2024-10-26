@@ -1,19 +1,11 @@
 import * as React from "react";
 import { useState } from "react";
-import {
-  Button,
-  Box,
-  Container,
-  Grid,
-  Group,
-  Flex,
-  Space,
-  TextInput,
-  Fieldset,
-} from "@mantine/core";
+import { Button, Grid, Space, TextInput, Fieldset } from "@mantine/core";
 import TimerPanel from "./timer-panel.jsx";
 import { IconPlus } from "@tabler/icons-react";
 
+// TODO: need to make new groups
+// TODO: need to find a way to save the timers
 export default function TimersGroup() {
   const createDefaultTimerConfig = (id) => {
     return {

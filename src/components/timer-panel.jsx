@@ -54,6 +54,7 @@ export default function TimerPanel(props) {
           if (prevTime === 0) {
             clearInterval(interval);
             restartTimer();
+            showFinishedNotification();
             return 0;
           } else {
             return prevTime - 1;
@@ -64,6 +65,14 @@ export default function TimerPanel(props) {
 
     return () => clearInterval(interval);
   }, [isStarted]);
+
+  const showFinishedNotification = () => {
+    
+    window.electronAPI.showNotification(
+      `${props.timerName} completed!`,
+      `The timer ${props.timerName} has finished.`
+    );
+  };
 
   const handleTimerNameChange = (event) => {
     props.onTimerNameChange(props.id, event.currentTarget.value);

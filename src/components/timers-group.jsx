@@ -15,45 +15,82 @@ import TimerPanel from "./timer-panel.jsx";
 import { IconPlus } from "@tabler/icons-react";
 
 export default function TimersGroup() {
-  function createDefaultTimerConfig(id) {
+  const createDefaultTimerConfig = (id) => {
     return {
       id,
       timerName: "Timer Name",
-      time: "",
+      submittedTime: 0,
     };
-  }
+  };
 
   const [groupName, setGroupName] = useState("");
   const [timers, setTimers] = useState([createDefaultTimerConfig(0)]);
 
-  function handleGroupNameChange(event) {
+  const handleGroupNameChange = (event) => {
     setGroupName(event.currentTarget.value);
-  }
+  };
 
-  function renderTimerPanel({ timerName, time, id }) {
+  const saveSubmittedTime = (changedTimerId, submittedTime) => {
+    setTimers(
+      timers.map((timer) => {
+        if (timer.id === changedTimerId) {
+          return {
+            ...timer,
+            submittedTime,
+          };
+        } else {
+          return timer;
+        }
+      })
+    );
+  };
+
+  const saveTimerName = (changedTimerId, timerName) => {
+    setTimers(
+      timers.map((timer) => {
+        if (timer.id === changedTimerId) {
+          return {
+            ...timer,
+            timerName,
+          };
+        } else {
+          return timer;
+        }
+      })
+    );
+  };
+
+  const renderTimerPanel = ({ timerName, submittedTime, id }) => {
     return (
       <Grid.Col key={id} span="content">
-        <TimerPanel onDeleteTimer={deleteATimer} id={id} />
+        <TimerPanel
+          onDeleteTimer={deleteATimer}
+          id={id}
+          timerName={timerName}
+          submittedTime={submittedTime}
+          onTimerStart={saveSubmittedTime}
+          onTimerNameChange={saveTimerName}
+        />
       </Grid.Col>
     );
-  }
+  };
 
-  function addATimer() {
+  const addATimer = () => {
     const newId = makeNewId();
     setTimers([...timers, createDefaultTimerConfig(newId)]);
-  }
+  };
 
-  function makeNewId() {
+  const makeNewId = () => {
     if (!timers.length) {
       return 0;
     }
     const currentMax = Math.max(...timers.map(({ id }) => id));
     return currentMax + 1;
-  }
+  };
 
-  function deleteATimer(idToDelete) {
+  const deleteATimer = (idToDelete) => {
     setTimers(timers.filter(({ id }) => id !== idToDelete));
-  }
+  };
 
   return (
     <Fieldset>

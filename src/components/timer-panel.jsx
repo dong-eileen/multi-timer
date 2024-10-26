@@ -14,34 +14,67 @@ import buttonClasses from "../css/button.module.css";
 TimerPanel.propTypes = {
   id: PropTypes.number,
   onDeleteTimer: PropTypes.func,
+  timerName: PropTypes.string,
+  submittedTime: PropTypes.number,
+  onTimerStart: PropTypes.func,
+  onTimerNameChange: PropTypes.func,
 };
 
 export default function TimerPanel(props) {
   const [isStarted, setIsStarted] = useState(false);
-  const [time, setTime] = useState("");
-  const [submittedTime, setSubmittedTime] = useState("");
-  const [timerName, setTimerName] = useState("Timer Name");
+  const [time, setTime] = useState(props.submittedTime);
   const [timeError, setTimeError] = useState("");
 
   const translateTimeToSeconds = (input) => {
-    const [hoursString, minutesString] = input.split(":");
+    const [hoursString, minutesString, secondsString] = input.split(":");
     const hours = +hoursString;
     const minutes = +minutesString;
-    return hours * 60 * 60 + minutes * 60;
+    const seconds = +secondsString;
+    return hours * 60 * 60 + minutes * 60 + seconds;
   };
 
+  const renderTimeInReadableFormat = (input) => {
+    const hours = Math.floor(input / (60 * 60));
+    const minutes = Math.floor((input % (60 * 60)) / 60);
+    const seconds = input % 60;
+    return (
+      `${hours}`.padStart(2, 0) +
+      ":" +
+      `${minutes}`.padStart(2, 0) +
+      ":" +
+      `${seconds}`.padStart(2, 0)
+    );
+  };
+
+  React.useEffect(() => {
+    let interval;
+    if (isStarted) {
+      interval = setInterval(() => {
+        setTime((prevTime) => {
+          if (prevTime === 0) {
+            clearInterval(interval);
+            restartTimer();
+            return 0;
+          } else {
+            return prevTime - 1;
+          }
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [isStarted]);
+
   const handleTimerNameChange = (event) => {
-    setTimerName(event.currentTarget.value);
+    props.onTimerNameChange(props.id, event.currentTarget.value);
   };
 
   const handleTimeChange = (event) => {
-    const timeInSeconds = translateTimeToSeconds(event.currentTarget.value);
-    setTime(event.currentTarget.value);
+    setTime(translateTimeToSeconds(event.currentTarget.value));
   };
 
   const checkTime = () => {
-    // check if the user has input a full time, including the seconds
-    if (time.split(":").length === 3) {
+    if (time > 0) {
       setTimeError("");
       return true;
     } else {
@@ -51,20 +84,19 @@ export default function TimerPanel(props) {
   };
 
   const toggleTimer = () => {
-    if (!checkTime()) {
-      return;
-    }
-    setSubmittedTime(time);
     if (isStarted) {
       setIsStarted(false);
+    } else if (!checkTime()) {
+      return;
     } else {
+      props.onTimerStart(props.id, time);
       setIsStarted(true);
     }
   };
 
-  const handleTimerRestart = () => {
+  const restartTimer = () => {
     setIsStarted(false);
-    setTime(submittedTime);
+    setTime(props.submittedTime);
   };
 
   const deleteTimer = () => {
@@ -74,15 +106,15 @@ export default function TimerPanel(props) {
   return (
     <React.Fragment>
       <Fieldset variant="filled">
-        <TextInput onChange={handleTimerNameChange} value={timerName} />
+        <TextInput onChange={handleTimerNameChange} value={props.timerName} />
         <p />
         <TimeInput
           error={timeError}
           onChange={handleTimeChange}
-          value={time}
+          value={renderTimeInReadableFormat(time)}
           withSeconds
-          minTime="00:00:00"
           disabled={isStarted}
+          onBlur={checkTime}
         />
         <p />
         <Group>
@@ -97,7 +129,7 @@ export default function TimerPanel(props) {
             <ActionIcon
               variant="filled"
               aria-label="Restart Timer"
-              onClick={handleTimerRestart}
+              onClick={restartTimer}
             >
               <IconRotateClockwise />
             </ActionIcon>

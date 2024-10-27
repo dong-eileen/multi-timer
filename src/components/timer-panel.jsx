@@ -16,23 +16,12 @@ TimerPanel.propTypes = {
   id: PropTypes.number,
   onDeleteTimer: PropTypes.func,
   timerName: PropTypes.string,
-  submittedTime: PropTypes.number,
+  submittedTime: PropTypes.string,
   onTimerSubmit: PropTypes.func,
   onTimerNameChange: PropTypes.func,
 };
 
 export default function TimerPanel(props) {
-  const ALARM_SOUND = new Audio(alarmFile);
-
-  const [isStarted, setIsStarted] = useState(false);
-  const [time, setTime] = useState(props.submittedTime);
-  const [timeError, setTimeError] = useState("");
-
-  useEffect(() => {
-    console.log(props.submittedTime);
-    setTime(props.submittedTime);
-  }, [props.submittedTime]);
-
   const translateTimeToSeconds = (input) => {
     const [hoursString, minutesString, secondsString] = input.split(":");
     const hours = +hoursString;
@@ -41,7 +30,7 @@ export default function TimerPanel(props) {
     return hours * 60 * 60 + minutes * 60 + seconds;
   };
 
-  const renderTimeInReadableFormat = (input) => {
+  const translateSecondsToTime = (input) => {
     const hours = Math.floor(input / (60 * 60));
     const minutes = Math.floor((input % (60 * 60)) / 60);
     const seconds = input % 60;
@@ -54,11 +43,24 @@ export default function TimerPanel(props) {
     );
   };
 
+  const ALARM_SOUND = new Audio(alarmFile);
+
+  const [isStarted, setIsStarted] = useState(false);
+  const [time, setTime] = useState(props.submittedTime);
+  const [timeInSeconds, setTimeInSeconds] = useState(
+    translateTimeToSeconds(props.submittedTime)
+  );
+  const [timeError, setTimeError] = useState("");
+
+  useEffect(() => {
+    setTime(props.submittedTime);
+  }, [props.submittedTime]);
+
   useEffect(() => {
     let interval;
     if (isStarted) {
       interval = setInterval(() => {
-        setTime((prevTime) => {
+        setTimeInSeconds((prevTime) => {
           if (prevTime === 0) {
             clearInterval(interval);
             restartTimer();
@@ -87,11 +89,11 @@ export default function TimerPanel(props) {
   };
 
   const handleTimeChange = (event) => {
-    setTime(translateTimeToSeconds(event.currentTarget.value));
+    setTime(event.currentTarget.value);
   };
 
   const checkTime = () => {
-    if (time > 0) {
+    if (time && translateTimeToSeconds(time) > 0) {
       setTimeError("");
       return true;
     } else {
@@ -115,6 +117,7 @@ export default function TimerPanel(props) {
       return;
     } else {
       submitTime();
+      setTimeInSeconds(translateTimeToSeconds(time));
       setIsStarted(true);
     }
   };
@@ -136,7 +139,7 @@ export default function TimerPanel(props) {
         <TimeInput
           error={timeError}
           onChange={handleTimeChange}
-          value={renderTimeInReadableFormat(time)}
+          value={isStarted ? translateSecondsToTime(timeInSeconds) : time}
           withSeconds
           disabled={isStarted}
           onBlur={submitTime}

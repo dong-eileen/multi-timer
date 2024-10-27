@@ -25,7 +25,7 @@ const createDefaultTimerConfig = (id) => {
   return {
     id,
     timerName: "Timer Name",
-    submittedTime: 0,
+    submittedTime: "00:00:00",
   };
 };
 

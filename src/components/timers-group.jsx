@@ -32,7 +32,6 @@ export default function TimersGroup() {
       changedTimerId,
       timerName,
     });
-    storeTimers(timers);
   };
 
   const renderTimerPanel = ({ timerName, submittedTime, id }) => {

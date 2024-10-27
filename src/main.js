@@ -41,7 +41,9 @@ function writeToFile(event, filePath, fileName, body) {
     fs.mkdirSync(filePath);
   }
   fs.writeFile(`${filePath}/${fileName}`, body, (error) => {
-    console.log(error);
+    if (error) {
+      console.log(error);
+    }
   });
 }
 

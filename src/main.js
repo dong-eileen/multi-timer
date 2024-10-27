@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Notification, ipcMain } = require("electron");
 const path = require("node:path");
+const fs = require("fs");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -35,6 +36,15 @@ function showNotification(event, title, body) {
   });
 }
 
+function writeToFile(event, filePath, fileName, body) {
+  if (!fs.existsSync(filePath)) {
+    fs.mkdirSync(filePath);
+  }
+  fs.writeFile(`${filePath}/${fileName}`, body, (error) => {
+    console.log(error);
+  });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -42,6 +52,7 @@ app.whenReady().then(() => {
   createWindow();
 
   ipcMain.on("show-notification", showNotification);
+  ipcMain.on("save-timers-to-file", writeToFile);
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.

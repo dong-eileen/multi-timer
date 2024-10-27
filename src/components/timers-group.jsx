@@ -5,9 +5,10 @@ import TimerPanel from "./timer-panel.jsx";
 import { IconPlus } from "@tabler/icons-react";
 import timersReducer from "../reducers/timers-reducer.js";
 import { initialTimers } from "../reducers/timers-reducer.js";
+import { storeTimers } from "../helpers/timers-writer.js";
 
 // TODO: need to make new groups
-// TODO: need to find a way to save the timers
+// TODO: need to find a way to restore FROM saved data
 export default function TimersGroup() {
   const [groupName, setGroupName] = useState("");
   const [timers, dispatch] = useReducer(timersReducer, initialTimers);
@@ -22,6 +23,7 @@ export default function TimersGroup() {
       changedTimerId,
       submittedTime,
     });
+    storeTimers(timers);
   };
 
   const saveTimerName = (changedTimerId, timerName) => {
@@ -30,6 +32,7 @@ export default function TimersGroup() {
       changedTimerId,
       timerName,
     });
+    storeTimers(timers);
   };
 
   const renderTimerPanel = ({ timerName, submittedTime, id }) => {

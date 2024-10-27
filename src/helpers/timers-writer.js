@@ -8,3 +8,7 @@ export const storeTimers = async (timers) => {
     JSON.stringify(timers)
   );
 };
+
+export const loadTimers = async (timers) => {
+  
+}

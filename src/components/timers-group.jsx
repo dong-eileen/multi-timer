@@ -14,6 +14,7 @@ import timersReducer from "../reducers/timers-reducer.js";
 import { initialTimers } from "../reducers/timers-reducer.js";
 import { storeTimers } from "../helpers/timers-writer.js";
 import buttonClasses from "../css/button.module.css";
+import SuccessNotification from "./success-notification.jsx";
 
 // TODO: need to make new groups
 // TODO: need to find a way to restore FROM saved data
@@ -84,19 +85,10 @@ export default function TimersGroup() {
 
   return (
     <React.Fragment>
-      {savedNotification.showNotification && (
-        <React.Fragment>
-          <Notification
-            icon={savedNotification.successful ? <IconCheck /> : <IconX />}
-          >
-            {savedNotification.successful
-              ? "Saved Successfully"
-              : "Something went wrong"}
-          </Notification>
-          <Space h="md" />
-        </React.Fragment>
-      )}
-
+      <SuccessNotification
+        successful={savedNotification.successful}
+        showNotification={savedNotification.showNotification}
+      />
       <Button className={buttonClasses.pullright} onClick={saveTimers}>
         Save Timers
       </Button>

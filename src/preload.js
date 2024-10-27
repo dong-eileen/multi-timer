@@ -6,5 +6,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   showNotification: (title, body) =>
     ipcRenderer.send("show-notification", title, body),
   saveTimersToFile: (filePath, fileName, body) =>
-    ipcRenderer.send("save-timers-to-file", filePath, fileName, body),
+    ipcRenderer.invoke("save-timers-to-file", filePath, fileName, body),
 });

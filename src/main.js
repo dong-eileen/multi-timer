@@ -40,11 +40,12 @@ function writeToFile(event, filePath, fileName, body) {
   if (!fs.existsSync(filePath)) {
     fs.mkdirSync(filePath);
   }
-  fs.writeFile(`${filePath}/${fileName}`, body, (error) => {
-    if (error) {
-      console.log(error);
-    }
-  });
+  try {
+    fs.writeFileSync(`${filePath}/${fileName}`, body);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 // This method will be called when Electron has finished
@@ -54,7 +55,7 @@ app.whenReady().then(() => {
   createWindow();
 
   ipcMain.on("show-notification", showNotification);
-  ipcMain.on("save-timers-to-file", writeToFile);
+  ipcMain.handle("save-timers-to-file", writeToFile);
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.

@@ -1,22 +1,14 @@
 import * as React from "react";
 import { useState, useReducer } from "react";
-import {
-  Button,
-  Grid,
-  Space,
-  TextInput,
-  Fieldset,
-  Notification,
-} from "@mantine/core";
+import { Button, Grid, Space, TextInput, Fieldset } from "@mantine/core";
 import TimerPanel from "./timer-panel.jsx";
-import { IconCheck, IconPlus, IconX } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import timersReducer from "../reducers/timers-reducer.js";
 import { initialTimers } from "../reducers/timers-reducer.js";
 import {
   loadTimersFromFile,
   storeTimersToFile,
 } from "../helpers/timers-writer.js";
-import buttonClasses from "../css/button.module.css";
 import SuccessNotification from "./success-notification.jsx";
 
 // TODO: need to make new groups
@@ -58,7 +50,7 @@ export default function TimersGroup() {
           id={id}
           timerName={timerName}
           submittedTime={submittedTime}
-          onTimerStart={saveSubmittedTime}
+          onTimerSubmit={saveSubmittedTime}
           onTimerNameChange={saveTimerName}
         />
       </Grid.Col>
@@ -111,11 +103,6 @@ export default function TimersGroup() {
 
   return (
     <React.Fragment>
-      <SuccessNotification
-        successful={successNotification.successful}
-        showNotification={successNotification.showNotification}
-        successfulText={successNotification.successfulText}
-      />
       <Button onClick={saveTimers}>Save Timers</Button>
       <Button onClick={loadTimers}>Load Timers</Button>
 
@@ -140,6 +127,11 @@ export default function TimersGroup() {
           </Button>
         </Grid>
       </Fieldset>
+      <SuccessNotification
+        successful={successNotification.successful}
+        showNotification={successNotification.showNotification}
+        successfulText={successNotification.successfulText}
+      />
     </React.Fragment>
   );
 }

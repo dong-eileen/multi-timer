@@ -17,7 +17,7 @@ TimerPanel.propTypes = {
   onDeleteTimer: PropTypes.func,
   timerName: PropTypes.string,
   submittedTime: PropTypes.number,
-  onTimerStart: PropTypes.func,
+  onTimerSubmit: PropTypes.func,
   onTimerNameChange: PropTypes.func,
 };
 
@@ -27,6 +27,11 @@ export default function TimerPanel(props) {
   const [isStarted, setIsStarted] = useState(false);
   const [time, setTime] = useState(props.submittedTime);
   const [timeError, setTimeError] = useState("");
+
+  useEffect(() => {
+    console.log(props.submittedTime);
+    setTime(props.submittedTime);
+  }, [props.submittedTime]);
 
   const translateTimeToSeconds = (input) => {
     const [hoursString, minutesString, secondsString] = input.split(":");
@@ -95,13 +100,21 @@ export default function TimerPanel(props) {
     }
   };
 
+  const submitTime = () => {
+    if (!checkTime()) {
+      return;
+    } else {
+      props.onTimerSubmit(props.id, time);
+    }
+  };
+
   const toggleTimer = () => {
     if (isStarted) {
       setIsStarted(false);
     } else if (!checkTime()) {
       return;
     } else {
-      props.onTimerStart(props.id, time);
+      submitTime();
       setIsStarted(true);
     }
   };
@@ -126,7 +139,7 @@ export default function TimerPanel(props) {
           value={renderTimeInReadableFormat(time)}
           withSeconds
           disabled={isStarted}
-          onBlur={checkTime}
+          onBlur={submitTime}
         />
         <p />
         <Group>

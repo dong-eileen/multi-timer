@@ -12,7 +12,10 @@ import TimerPanel from "./timer-panel.jsx";
 import { IconCheck, IconPlus, IconX } from "@tabler/icons-react";
 import timersReducer from "../reducers/timers-reducer.js";
 import { initialTimers } from "../reducers/timers-reducer.js";
-import { storeTimers } from "../helpers/timers-writer.js";
+import {
+  loadTimersFromFile,
+  storeTimersToFile,
+} from "../helpers/timers-writer.js";
 import buttonClasses from "../css/button.module.css";
 import SuccessNotification from "./success-notification.jsx";
 
@@ -21,9 +24,10 @@ import SuccessNotification from "./success-notification.jsx";
 export default function TimersGroup() {
   const [groupName, setGroupName] = useState("");
   const [timers, dispatch] = useReducer(timersReducer, initialTimers);
-  const [savedNotification, setSavedNotification] = useState({
+  const [successNotification, setSuccessNotification] = useState({
     successful: false,
     showNotification: false,
+    successfulText: "",
   });
 
   const handleGroupNameChange = (event) => {
@@ -76,22 +80,45 @@ export default function TimersGroup() {
 
   // TODO: bug/refactoring -- when you edit the time -> don't click start Timer -> click Save timers, SubmittedTime is still 0 and it gets saved as 0
   const saveTimers = async () => {
-    const successful = await storeTimers(timers);
-    setSavedNotification({ successful, showNotification: true });
+    const successful = await storeTimersToFile(timers);
+    showSuccessNotification(successful, "Saved successfully");
+  };
+
+  const loadTimers = async () => {
+    const data = await loadTimersFromFile();
+    if (data) {
+      dispatch({
+        type: "loaded",
+        newTimers: data,
+      });
+    }
+    showSuccessNotification(!!data, "Loaded successfully");
+  };
+
+  const showSuccessNotification = (successful, successfulText) => {
+    setSuccessNotification({
+      successful,
+      showNotification: true,
+      successfulText,
+    });
     setTimeout(() => {
-      setSavedNotification({ ...savedNotification, showNotification: false });
+      setSuccessNotification({
+        ...successNotification,
+        showNotification: false,
+      });
     }, 2000);
   };
 
   return (
     <React.Fragment>
       <SuccessNotification
-        successful={savedNotification.successful}
-        showNotification={savedNotification.showNotification}
+        successful={successNotification.successful}
+        showNotification={successNotification.showNotification}
+        successfulText={successNotification.successfulText}
       />
-      <Button className={buttonClasses.pullright} onClick={saveTimers}>
-        Save Timers
-      </Button>
+      <Button onClick={saveTimers}>Save Timers</Button>
+      <Button onClick={loadTimers}>Load Timers</Button>
+
       <Space h="md" />
 
       <Fieldset>

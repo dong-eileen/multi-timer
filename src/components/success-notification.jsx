@@ -6,13 +6,17 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 SuccessNotification.propTypes = {
   successful: PropTypes.bool,
   showNotification: PropTypes.bool,
+  successfulText: PropTypes.string,
 };
 export default function SuccessNotification(props) {
   return (
     props.showNotification && (
       <React.Fragment>
-        <Notification icon={props.successful ? <IconCheck /> : <IconX />}>
-          {props.successful ? "Saved Successfully" : "Something went wrong"}
+        <Notification
+          withCloseButton
+          icon={props.successful ? <IconCheck /> : <IconX />}
+        >
+          {props.successful ? props.successfulText : "Something went wrong"}
         </Notification>
         <Space h="md" />
       </React.Fragment>

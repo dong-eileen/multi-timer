@@ -51,6 +51,10 @@ const handleTimerSubmitted = (timers, action) => {
   });
 };
 
+const handleTimersLoaded = (timers, action) => {
+  return action.newTimers;
+};
+
 export const initialTimers = [createDefaultTimerConfig(0)];
 
 export default function timersReducer(timers, action) {
@@ -63,5 +67,7 @@ export default function timersReducer(timers, action) {
       return handleTimerDeleted(timers, action);
     case "renamed":
       return handleTimerRenamed(timers, action);
+    case "loaded":
+      return handleTimersLoaded(timers, action);
   }
 }

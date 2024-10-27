@@ -41,10 +41,18 @@ function writeToFile(event, filePath, fileName, body) {
     fs.mkdirSync(filePath);
   }
   try {
-    fs.writeFileSync(`${filePath}/${fileName}`, body);
+    fs.writeFileSync(`${filePath}/${fileName}`, body, "utf-8");
     return true;
   } catch (e) {
     return false;
+  }
+}
+
+function loadFromFile(event, filePath, fileName) {
+  try {
+    return fs.readFileSync(`${filePath}/${fileName}`, "utf-8");
+  } catch (e) {
+    return null;
   }
 }
 
@@ -56,6 +64,7 @@ app.whenReady().then(() => {
 
   ipcMain.on("show-notification", showNotification);
   ipcMain.handle("save-timers-to-file", writeToFile);
+  ipcMain.handle("load-timers-from-file", loadFromFile);
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.

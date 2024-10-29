@@ -57,23 +57,25 @@ export default function TimerPanel(props) {
   }, [props.submittedTime]);
 
   useEffect(() => {
-    let interval;
-    if (isStarted) {
-      interval = setInterval(() => {
-        setTimeInSeconds((prevTime) => {
-          if (prevTime === 0) {
-            clearInterval(interval);
-            restartTimer();
-            showFinishedNotification();
-            return 0;
-          } else {
-            return prevTime - 1;
-          }
-        });
-      }, 1000);
-    }
+    if (isStarted && window.Worker) {
+      const countdownWorker = new Worker(
+        new URL("../helpers/countdown-worker.js", import.meta.url)
+      );
 
-    return () => clearInterval(interval);
+      countdownWorker.onmessage = (event) => {
+        let { remainingTime } = event.data;
+        setTimeInSeconds(remainingTime);
+        if (remainingTime <= 0) {
+          restartTimer();
+          showFinishedNotification();
+          countdownWorker.terminate();
+        }
+      };
+
+      countdownWorker.postMessage({ timeInSeconds });
+
+      return () => countdownWorker.terminate();
+    }
   }, [isStarted]);
 
   const showFinishedNotification = () => {
@@ -124,7 +126,7 @@ export default function TimerPanel(props) {
 
   const restartTimer = () => {
     setIsStarted(false);
-    setTime(props.submittedTime);
+    //setTime(props.submittedTime);
   };
 
   const deleteTimer = () => {
